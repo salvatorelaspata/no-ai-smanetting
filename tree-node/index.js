@@ -3,6 +3,9 @@
 import { readdir, stat } from 'fs'
 import { styleText } from 'node:util';
 
+// global variable
+let count = { dir: 0, files: 0 }
+
 // utils function
 const dirStyleText = (text) => styleText(['bold', 'blue'], text)
 const fileStyleText = (text) => styleText(['reset'], text)
@@ -31,28 +34,39 @@ const walk = async (path, indent) => {
             })
         })
         if (_file.isDirectory()) {
+            count.dir += 1;
             print(_name, true, indent)
-            walk(_path, indent + 1)
+            await walk(_path, indent + 1)
         } else {
+            count.files += 1;
             print(_name, false, indent)
         }
     }
 }
 
-// current directory
-let dir = process.cwd();
-// console.log(process.cwd())   // /Users/salvatore/Documents/dev/no-ai-smanetting
-// console.log(__dirname)       // /Users/salvatore/Documents/dev/no-ai-smanetting/tree-node // console.log(import.meta.dirname)
-// console.log(__filename)      // /Users/salvatore/Documents/dev/no-ai-smanetting/tree-node/index.js // console.log(import.meta.filename)
+const start = async () => {
+    // current directory
+    let dir = process.cwd();
+    // console.log(process.cwd())   // /Users/salvatore/Documents/dev/no-ai-smanetting
+    // console.log(__dirname)       // /Users/salvatore/Documents/dev/no-ai-smanetting/tree-node // console.log(import.meta.dirname)
+    // console.log(__filename)      // /Users/salvatore/Documents/dev/no-ai-smanetting/tree-node/index.js // console.log(import.meta.filename)
 
-// args
-const argv = process.argv;
-// i primi due argomenti sono già popolati:
-// 1. path eseguibile node
-// 2. path index.js
-if (argv.length > 2) {
-    // 3. directory
-    dir = argv[2];
+    // args
+    const argv = process.argv;
+    // i primi due argomenti sono già popolati:
+    // 1. path eseguibile node
+    // 2. path index.js
+    if (argv.length > 2) {
+        // 3. directory
+        dir = argv[2];
+    }
+    console.time('walk')
+    // console.log('beforewalk')
+    await walk(dir, 0)
+    // console.log('afterwalk')
+    console.timeEnd('walk')
+    return count
 }
 
-await walk(dir, 0)
+start().then(console.log)
+// start().then(function () { console.log('then afterstart') }).catch(function () { console.log('catch afterstart') })

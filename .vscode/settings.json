@@ -1,0 +1,9 @@
+{
+  // Disabilita i suggerimenti inline di Copilot (ghost text) per tutti i linguaggi
+  "github.copilot.enable": {
+    "*": false
+  },
+  "chat.disableAIFeatures": true,
+  // Disabilita anche i "Next Edit Suggestions" di Copilot
+  "github.copilot.nextEditSuggestions.enabled": false
+}
